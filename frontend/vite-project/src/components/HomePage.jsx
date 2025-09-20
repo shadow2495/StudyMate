@@ -33,20 +33,21 @@ const HomePage = () => {
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <div className="flex flex-row justify-center items-center gap-6 mb-12 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
               <Link 
                 to="/register" 
-                className="btn-primary group text-lg px-8 py-4"
+                className="group flex items-center justify-center min-w-[180px] px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl border-2 border-blue-400 hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-500/40 focus:shadow-blue-500/60 transition-all duration-300 hover:scale-105 focus:scale-105 focus:outline-none"
+                style={{boxShadow: '0 0 16px 2px #6366f1, 0 4px 24px rgba(59,130,246,0.3)'}}
               >
                 Get Started Free
                 <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
-              
               <Link 
                 to="/login" 
-                className="btn-outline group text-lg px-8 py-4"
+                className="group flex items-center justify-center min-w-[180px] px-8 py-4 rounded-xl text-lg font-semibold bg-white/10 text-white border-2 border-blue-400 shadow-2xl hover:bg-white/20 hover:shadow-blue-500/40 focus:shadow-blue-500/60 transition-all duration-300 hover:scale-105 focus:scale-105 focus:outline-none"
+                style={{boxShadow: '0 0 16px 2px #6366f1, 0 4px 24px rgba(59,130,246,0.3)'}}
               >
                 Sign In
                 <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
