@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Import components
+import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
@@ -14,6 +15,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-hero-gradient">
+        <Navbar />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
