@@ -54,7 +54,7 @@ const HomePage = () => {
         <div className="relative max-w-7xl mx-auto text-center">
           <div className="animate-fade-in">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
-              Your <span className="gradient-text">AI-Powered</span>
+              Your <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">AI-Powered</span>
               <br />
               Academic Assistant
             </h1>
@@ -67,14 +67,14 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-4">
               <Link 
                 to="/register" 
-                className="w-full sm:w-auto bg-primary-gradient text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:shadow-glow-lg transition-all duration-300 btn-glow animate-pulse-glow text-center"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-1 text-center"
               >
                 Start Learning Now
               </Link>
               
               <Link 
                 to="/demo" 
-                className="w-full sm:w-auto glass-card text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white/10 transition-all duration-300 text-center"
+                className="w-full sm:w-auto bg-slate-800/50 backdrop-blur-xl border border-white/20 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white/10 transition-all duration-300 text-center"
               >
                 Watch Demo
               </Link>
@@ -93,7 +93,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 animate-slide-up">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
-              Powerful <span className="gradient-text">Features</span>
+              Powerful <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Features</span>
             </h2>
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto px-4">
               Everything you need to revolutionize your study experience
@@ -104,7 +104,7 @@ const HomePage = () => {
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className="glass-card rounded-2xl p-6 sm:p-8 hover:scale-105 transition-all duration-300 animate-slide-up group"
+                className="bg-slate-800/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-black/20 rounded-2xl p-6 sm:p-8 hover:scale-105 transition-all duration-300 group"
                 style={{animationDelay: `${index * 0.1}s`}}
               >
                 <div className={`w-12 sm:w-16 h-12 sm:h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center text-xl sm:text-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
@@ -127,9 +127,9 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="px-6 py-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="glass-card rounded-3xl p-12 animate-scale-in">
+          <div className="bg-slate-800/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-black/20 rounded-3xl p-12">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Ready to Transform Your <span className="gradient-text">Learning?</span>
+              Ready to Transform Your <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Learning?</span>
             </h2>
             
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
@@ -139,7 +139,7 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link 
                 to="/register" 
-                className="bg-accent-gradient text-white px-10 py-4 rounded-xl font-semibold text-lg hover:shadow-glow-lg transition-all duration-300 btn-glow"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-10 py-4 rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300 hover:-translate-y-1"
               >
                 Get Started Free
               </Link>
@@ -160,17 +160,17 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="animate-slide-up">
-              <div className="text-4xl lg:text-5xl font-bold gradient-text mb-2">10K+</div>
+              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">10K+</div>
               <div className="text-slate-300 text-lg">Active Students</div>
             </div>
             
             <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
-              <div className="text-4xl lg:text-5xl font-bold gradient-text mb-2">1M+</div>
+              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">1M+</div>
               <div className="text-slate-300 text-lg">Questions Answered</div>
             </div>
             
             <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
-              <div className="text-4xl lg:text-5xl font-bold gradient-text mb-2">99%</div>
+              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">99%</div>
               <div className="text-slate-300 text-lg">Accuracy Rate</div>
             </div>
           </div>

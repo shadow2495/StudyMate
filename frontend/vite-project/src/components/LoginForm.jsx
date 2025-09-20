@@ -46,7 +46,7 @@ const LoginForm = () => {
           <span className="text-sm font-medium">Back to Home</span>
         </Link>
 
-        <div className="glass-card rounded-3xl p-6 sm:p-8 animate-scale-in shadow-2xl shadow-blue-500/10 border border-white/20 backdrop-blur-xl">
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-blue-500/10 rounded-3xl p-6 sm:p-8">
           {/* Header */}
           <div className="text-center mb-8 sm:mb-10">
             <div className="w-16 h-16 sm:w-18 sm:h-18 bg-primary-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30 ring-2 ring-white/10">
@@ -147,7 +147,7 @@ const LoginForm = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary-gradient text-white py-4 px-6 rounded-xl font-semibold text-base hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 btn-glow disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0 mt-8"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-4 px-6 rounded-xl font-semibold text-base hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0 mt-8"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
