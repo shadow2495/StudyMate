@@ -1,9 +1,19 @@
 from fastapi import FastAPI
-from app.database import engine, Base
-from app.routes import auth, pdf
-from app.RAG import rag
+from fastapi.middleware.cors import CORSMiddleware
+from database import engine, Base
+from routes import auth, pdf
+from RAG import rag
 
-app = FastAPI()
+app = FastAPI(title="StudyMate API", version="1.0.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth.router)
 app.include_router(pdf.router)

@@ -1,29 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import ProtectedRoute from './ProtectedRoute';
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'user',
-      content: 'What are the main types of machine learning algorithms?',
-      timestamp: '2:30 PM'
-    },
-    {
-      id: 2,
-      type: 'ai',
-      content: 'There are three main types of machine learning algorithms:\n\n1. **Supervised Learning**: Algorithms learn from labeled training data to make predictions on new, unseen data. Examples include linear regression, decision trees, and neural networks.\n\n2. **Unsupervised Learning**: Algorithms find patterns in data without labeled examples. Examples include clustering (K-means) and dimensionality reduction (PCA).\n\n3. **Reinforcement Learning**: Algorithms learn through interaction with an environment, receiving rewards or penalties for actions. Examples include Q-learning and policy gradient methods.',
-      timestamp: '2:31 PM',
-      sources: [
-        { title: 'Machine Learning Fundamentals.pdf', page: 23 },
-        { title: 'Introduction to AI.pdf', page: 45 }
-      ]
-    }
-  ]);
-
+  const { token, user, logout } = useAuth();
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [documents, setDocuments] = useState([]);
   const messagesEndRef = useRef(null);
+  const API_BASE_URL = 'http://localhost:8080';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,46 +20,96 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (e) => {
+  // Fetch user documents on component mount
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/pdf/documents`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const docs = await response.json();
+          setDocuments(docs);
+        }
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+    };
+
+    if (token) {
+      fetchDocuments();
+    }
+  }, [token]);
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
     const newMessage = {
-      id: messages.length + 1,
+      id: Date.now(),
       type: 'user',
       content: inputMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
     setMessages(prev => [...prev, newMessage]);
+    const currentMessage = inputMessage;
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
+    try {
+      const response = await fetch(`${API_BASE_URL}/rag/query/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: currentMessage }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const aiResponse = {
+          id: Date.now() + 1,
+          type: 'ai',
+          content: data.answer,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          sources: data.context ? data.context.map((ctx, index) => ({
+            title: `Document ${index + 1}`,
+            page: 'N/A'
+          })) : []
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      } else {
+        const errorResponse = {
+          id: Date.now() + 1,
+          type: 'ai',
+          content: 'Sorry, I encountered an error processing your question. Please try again.',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages(prev => [...prev, errorResponse]);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorResponse = {
+        id: Date.now() + 1,
         type: 'ai',
-        content: 'I understand your question. Let me search through your documents to provide you with the most accurate answer based on your uploaded materials.',
+        content: 'Sorry, I encountered a network error. Please check your connection and try again.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sources: [
-          { title: 'Machine Learning Fundamentals.pdf', page: 15 },
-          { title: 'Data Structures and Algorithms.pdf', page: 78 }
-        ]
       };
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 2000);
+    }
   };
 
-  const uploadedDocs = [
-    { name: 'Machine Learning Fundamentals.pdf', pages: 45, status: 'processed' },
-    { name: 'Data Structures and Algorithms.pdf', pages: 320, status: 'processed' },
-    { name: 'Neural Networks Deep Dive.pdf', pages: 180, status: 'processing' }
-  ];
-
   return (
-  <div className="min-h-screen bg-slate-900 flex">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-slate-900 flex">
     {/* Sidebar */}
   <div className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">  {/* Decreased width */}
         {/* Header */}
@@ -101,32 +138,30 @@ const ChatPage = () => {
         <div className="flex-1 p-4">
           <h3 className="text-base font-semibold text-white mb-2">Your Documents</h3>
           <div className="space-y-2">
-            {uploadedDocs.map((doc) => (
-              <div key={doc.name} className="p-2 rounded-md bg-slate-900 hover:bg-slate-800 transition-colors duration-200">
-                <div className="flex items-start space-x-2">
-                  <div className="w-6 h-6 bg-red-900 rounded-md flex items-center justify-center flex-shrink-0">
-                    <svg className="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-white truncate">{doc.name}</p>
-                    <p className="text-xs text-slate-400">{doc.pages} pages</p>
-                    <div className="mt-1">
-                      {doc.status === 'processed' ? (
+            {documents.length === 0 ? (
+              <p className="text-slate-400 text-sm">No documents uploaded yet</p>
+            ) : (
+              documents.map((doc) => (
+                <div key={doc.id} className="p-2 rounded-md bg-slate-900 hover:bg-slate-800 transition-colors duration-200">
+                  <div className="flex items-start space-x-2">
+                    <div className="w-6 h-6 bg-red-900 rounded-md flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-white truncate">{doc.filename}</p>
+                      <p className="text-xs text-slate-400">Uploaded {new Date(doc.uploaded_at).toLocaleDateString()}</p>
+                      <div className="mt-1">
                         <span className="inline-flex items-center px-1 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
                           Ready
                         </span>
-                      ) : (
-                        <span className="inline-flex items-center px-1 py-0.5 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300">
-                          Processing
-                        </span>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -272,6 +307,7 @@ const ChatPage = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

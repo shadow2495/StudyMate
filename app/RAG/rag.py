@@ -21,7 +21,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 import os
 import shutil
-from . import services
+# from . import services
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -49,16 +49,28 @@ class QueryResponse(BaseModel):
 
 
 DB_FILE = tempfile.NamedTemporaryFile(prefix="milvus_", suffix=".db", delete=False).name
-EMBEDDINGS_MODEL = GoogleGenerativeAIEmbeddings(model="models/"gemini-embedding-001")
+EMBEDDINGS_MODEL = None
 VECTOR_DB_INSTANCE = None
+
+def get_embeddings_model():
+    """Initialize and return the embeddings model."""
+    global EMBEDDINGS_MODEL
+    if EMBEDDINGS_MODEL is None:
+        from config import settings
+        EMBEDDINGS_MODEL = GoogleGenerativeAIEmbeddings(
+            model="models/gemini-embedding-001",
+            google_api_key=settings.GOOGLE_API_KEY
+        )
+    return EMBEDDINGS_MODEL
 
 def get_vector_db():
     """Initializes and returns a singleton Milvus vector database instance."""
     global VECTOR_DB_INSTANCE
     if VECTOR_DB_INSTANCE is None:
         print(f"The vector database will be saved to {DB_FILE}")
+        embeddings_model = get_embeddings_model()
         VECTOR_DB_INSTANCE = Milvus(
-            embedding_function=EMBEDDINGS_MODEL,
+            embedding_function=embeddings_model,
             connection_args={"uri": DB_FILE},
             auto_id=True,
             index_params={"index_type": "AUTOINDEX"},
@@ -100,7 +112,14 @@ async def process_document(filename: str) -> int:
 
 
 
-MODEL = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.4)
+def get_chat_model():
+    """Initialize and return the chat model."""
+    from config import settings
+    return ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash", 
+        temperature=0.4,
+        google_api_key=settings.GOOGLE_API_KEY
+    )
 
 @router.post("/query/", response_model=QueryResponse)
 async def query_rag(request: QueryRequest):
@@ -108,12 +127,16 @@ async def query_rag(request: QueryRequest):
     Asks a question to the RAG system and gets an answer.
     """
     try:
-        response = await services.answer_question(request.query)
-        context_docs = [doc.page_content for doc in response.get("context", [])]
-        return {"answer": response.get("answer"), "context": context_docs}
+        response = await get_rag_answer(request.query)
+        context_docs = response.get("context", [])
+        return {"answer": response.get("answer", "No answer found"), "context": context_docs}
     except RuntimeError as e:
+        import traceback
+        print("[RAG RuntimeError]", traceback.format_exc())
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
+        import traceback
+        print("[RAG Exception]", traceback.format_exc())
         raise HTTPException(
             status_code=500, detail=f"An error occurred during query: {e}"
         )
@@ -138,8 +161,9 @@ async def get_rag_answer(query: str) -> dict:
 Question: {input}""")
     
     # Assemble the retrieval-augmented generation chain
+    model = get_chat_model()
     combine_docs_chain = create_stuff_documents_chain(
-        llm=MODEL,
+        llm=model,
         prompt=prompt_template,
     )
     
@@ -154,3 +178,4 @@ Question: {input}""")
 
 
 if __name__ == "__main__":
+    pass

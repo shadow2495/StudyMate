@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,12 +24,17 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log('Login attempt:', formData);
-    }, 2000);
+    const result = await login(formData.email, formData.password);
+    
+    if (result.success) {
+      navigate('/chat');
+    } else {
+      setError(result.error);
+    }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -262,6 +272,13 @@ const LoginForm = () => {
               <p className="text-slate-300">Sign in to continue your learning journey</p>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-900/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Input */}
@@ -351,10 +368,10 @@ const LoginForm = () => {
                 {isLoading ? (
                   <div className="flex items-center justify-center">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
-                    Signing In...
+                    Log In...
                   </div>
                 ) : (
-                  'Sign In'
+                  'Log In'
                 )}
               </button>
             </form>

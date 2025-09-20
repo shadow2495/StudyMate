@@ -19,7 +19,7 @@ const Navbar = () => {
 
   return (
     <>
-      <style jsx>{`
+  <style>{`
         .nav-link {
           position: relative;
           display: inline-block;
